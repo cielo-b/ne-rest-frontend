@@ -5,14 +5,17 @@ import { z } from "zod";
 import { loginSchema } from "../lib/validations";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "../interfaces/interfaces";
 import { useDispatch } from "react-redux";
-import { login } from "../features/auth/authSlice";
+import { loginThunk } from "../thunks/authThunks";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AppDispatch } from "../store";
 
 type LoginData = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
     register,
@@ -22,15 +25,19 @@ const Login: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const onsubmit = (data: LoginData) => {
-    const token = "tiuhgjsgds345678";
-    const user: User = { name: "Regis", email: data.email };
-    dispatch(login({ user, token }));
-    console.log("✅ User logged in:", user);
-    navigate("/home");
+  const onsubmit = async (data: LoginData) => {
+    setIsLoading(true);
+    const result = await dispatch(loginThunk(data));
+    if (loginThunk.fulfilled.match(result)) {
+      toast.success("Logged in successfully!");
+      navigate("/home");
+    } else if (loginThunk.rejected.match(result)) {
+      toast.error(result.payload as string);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -90,9 +97,38 @@ const Login: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full cursor-pointer bg-blue-600 text-white p-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+            disabled={isLoading}
+            className={`w-full cursor-pointer bg-blue-600 text-white p-3 rounded-xl font-semibold transition ${
+              isLoading ? "opacity-60 cursor-not-allowed" : "hover:bg-blue-700"
+            }`}
           >
-            Sign In
+            {isLoading ? (
+              <div className="flex justify-center items-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                  ></path>
+                </svg>
+                Logging in...
+              </div>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 

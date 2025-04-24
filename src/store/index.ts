@@ -2,16 +2,9 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "../features/auth/authSlice";
 import storage from "redux-persist/lib/storage";
 import persistReducer from "redux-persist/es/persistReducer";
-import {
-  FLUSH,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-  REHYDRATE,
-} from "redux-persist";
 import { persistStore } from "redux-persist";
 import { booksReducer } from "../features/books/bookSlice";
+import thunk from "redux-thunk";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -21,7 +14,6 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  version: 1,
   whitelist: ["auth"],
 };
 
@@ -31,9 +23,7 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
+      serializableCheck: false,
     }),
 });
 
