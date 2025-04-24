@@ -30,14 +30,20 @@ const Login: React.FC = () => {
 
   const onsubmit = async (data: LoginData) => {
     setIsLoading(true);
-    const result = await dispatch(loginThunk(data));
-    if (loginThunk.fulfilled.match(result)) {
-      toast.success("Logged in successfully!");
-      navigate("/home");
-    } else if (loginThunk.rejected.match(result)) {
-      toast.error(result.payload as string);
+    try {
+      const result = await dispatch(loginThunk(data));
+      if (loginThunk.fulfilled.match(result)) {
+        toast.success("Logged in successfully!");
+        navigate("/home");
+      } else if (loginThunk.rejected.match(result)) {
+        toast.error(result.payload as string);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    } finally {
+      console.log("h")
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
