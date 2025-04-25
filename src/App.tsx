@@ -1,10 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Register from "./pages/Register";
-import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
+import Dashboard from "./pages/Dashboard";
+import AuthRegisterProtected from "./routes/AuthRegisterProtected";
+import NotFound from "./pages/Notfound";
 
 function App() {
   return (
@@ -12,16 +14,17 @@ function App() {
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<AuthRegisterProtected><Login /></AuthRegisterProtected>} />
+        <Route path="/register" element={<AuthRegisterProtected><Register /></AuthRegisterProtected>}  />
         <Route
-          path="/home"
+          path="dashboard"
           element={
             <ProtectedRoute>
-              <Home />
+              <Dashboard />
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

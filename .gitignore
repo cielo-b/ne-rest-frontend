@@ -25,4 +25,4 @@ dist-ssr
 .qodo
 
 # .env
-.env
+config.bat

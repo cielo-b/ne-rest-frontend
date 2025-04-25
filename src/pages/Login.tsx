@@ -34,14 +34,13 @@ const Login: React.FC = () => {
       const result = await dispatch(loginThunk(data));
       if (loginThunk.fulfilled.match(result)) {
         toast.success("Logged in successfully!");
-        navigate("/home");
+        navigate("/dashboard");
       } else if (loginThunk.rejected.match(result)) {
         toast.error(result.payload as string);
       }
     } catch (error: any) {
       toast.error(error.response.data.message);
     } finally {
-      console.log("h")
       setIsLoading(false);
     }
   };
