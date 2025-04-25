@@ -24,7 +24,7 @@ const bookSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchBooksThunk.fulfilled, (state, action) => {
-        state.books = action.payload;
+        state.books = action.payload.data;
         state.loading = false;
       })
       .addCase(fetchBooksThunk.rejected, (state, action) => {

@@ -25,3 +25,15 @@ export const registerThunk = createAsyncThunk(
     }
   }
 );
+
+export const getMeThunk = createAsyncThunk(
+  "auth/me",
+  async (token: string, thunkAPI) => {
+    try {
+      const data = authService.getLoggedInUser(token);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);

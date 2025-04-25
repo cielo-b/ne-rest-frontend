@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { AuthState } from "../../interfaces/interfaces";
-import { loginThunk, registerThunk } from "../../thunks/authThunks";
+import { AuthState, User } from "../../interfaces/interfaces";
+import { getMeThunk, loginThunk, registerThunk } from "../../thunks/authThunks";
 
 const initialState: AuthState = {
   user: null,
@@ -46,6 +46,21 @@ export const authSlice = createSlice({
         state.token = action.payload.token;
       })
       .addCase(registerThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(getMeThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getMeThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user as User;
+        state.error = null;
+      })
+      .addCase(getMeThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
